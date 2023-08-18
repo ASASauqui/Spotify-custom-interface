@@ -4,7 +4,7 @@ defmodule SpotifyInterfaceWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
-  def on_mount(:mount_current_user, _params, session, socket) do
+  def on_mount(:mount_current_user, _params, _session, socket) do
     {:cont, socket}
   end
 

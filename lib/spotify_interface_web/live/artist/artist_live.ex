@@ -1,6 +1,6 @@
 defmodule SpotifyInterfaceWeb.ArtistLive do
   use SpotifyInterfaceWeb, :live_view
-  import SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterface.Services.SpotifyService
 
   def mount(_params, _session, socket) do
     socket = assign(socket,
