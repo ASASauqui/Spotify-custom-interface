@@ -2,13 +2,20 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   use SpotifyInterfaceWeb, :live_view
   import SpotifyInterface.Services.SpotifyService
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
+    access_token = session["access_token"]
+
     id = params["id"]
 
-    album = get_album(id)
+    album = get_album(id, access_token)
 
-    tracks = get_album_tracks(id)
+    tracks = get_album_tracks(id, access_token)
 
-    {:ok, assign(socket, album: album, tracks: tracks)}
+    socket = assign(socket,
+                    album: album,
+                    tracks: tracks
+      )
+
+    {:ok, socket}
   end
 end

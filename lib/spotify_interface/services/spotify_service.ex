@@ -3,13 +3,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
   alias SpotifyInterface.Artist.Artist
   alias SpotifyInterface.Track.Track
 
-  # This is not my API key, it's just a test one.
-  @spotify_token "8ae9eb224c864110974f110fccc0426b"
   @base_url "https://api.spotify.com/"
 
-  def search_for_item(search) do
+  def search_for_item(search, access_token) do
     endpoint = "v1/search"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     encoded_search = URI.encode_www_form(search)
 
@@ -90,9 +88,9 @@ defmodule SpotifyInterface.Services.SpotifyService do
     end
   end
 
-  def get_album(id) do
+  def get_album(id, access_token) do
     endpoint = "v1/albums"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}?market=ES", headers, [])
     |> Map.get(:body)
@@ -122,9 +120,9 @@ defmodule SpotifyInterface.Services.SpotifyService do
     end
   end
 
-  def get_album_tracks(id) do
+  def get_album_tracks(id, access_token) do
     endpoint = "v1/albums"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}/tracks?market=ES", headers, [])
     |> Map.get(:body)
@@ -160,9 +158,9 @@ defmodule SpotifyInterface.Services.SpotifyService do
     end
   end
 
-  def get_artist(id) do
+  def get_artist(id, access_token) do
     endpoint = "v1/artists"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}", headers, [])
     |> Map.get(:body)
@@ -187,9 +185,9 @@ defmodule SpotifyInterface.Services.SpotifyService do
     end
   end
 
-  def get_albums_by_artist(id) do
+  def get_albums_by_artist(id, access_token) do
     endpoint = "v1/artists"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}/albums?market=ES", headers, [])
     |> Map.get(:body)
@@ -221,9 +219,9 @@ defmodule SpotifyInterface.Services.SpotifyService do
     end
   end
 
-  def get_top_tracks_by_artist(id) do
+  def get_top_tracks_by_artist(id, access_token) do
     endpoint = "v1/artists"
-    headers = [{"Authorization", "Bearer #{@spotify_token}"}]
+    headers = [{"Authorization", "Bearer #{access_token}"}]
 
     response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}/top-tracks?market=ES", headers, [])
     |> Map.get(:body)

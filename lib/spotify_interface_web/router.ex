@@ -1,6 +1,8 @@
 defmodule SpotifyInterfaceWeb.Router do
   use SpotifyInterfaceWeb, :router
 
+  import SpotifyInterfaceWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -15,11 +17,30 @@ defmodule SpotifyInterfaceWeb.Router do
   end
 
   scope "/", SpotifyInterfaceWeb do
-    pipe_through :browser
+    pipe_through [:browser, :require_authenticated_user]
 
-    live "/", HomeLive
     live "/artist/:id", ArtistLive
     live "/album/:id", AlbumLive
+
+    get "/logout", AuthenticationController, :logout
+  end
+
+  scope "/", SpotifyInterfaceWeb do
+    pipe_through :browser
+
+    get "/callback", AuthenticationController, :callback
+
+    live "/login", LoginLive
+    post "/login", AuthenticationController, :login
+  end
+
+  scope "/", SpotifyInterfaceWeb do
+    pipe_through [:browser]
+
+    live_session :access_token,
+      on_mount: [{SpotifyInterfaceWeb.UserAuth, :ensure_authenticated}] do
+      live "/", HomeLive
+    end
   end
 
   # Other scopes may use custom stacks.
