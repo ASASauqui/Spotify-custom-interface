@@ -87,7 +87,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
           tracks: tracks
         }
        _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 
@@ -119,18 +123,23 @@ defmodule SpotifyInterface.Services.SpotifyService do
           uri: decoded_response["uri"],
           genres: decoded_response["genres"],
           label: decoded_response["label"],
-          popularity: decoded_response["popularity"]
+          popularity: decoded_response["popularity"],
+          artists: decoded_response["artists"],
+          tracks: decoded_response["tracks"]
         }
       _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 
-  def get_album_tracks(id, access_token) do
-    endpoint = "v1/albums"
+  def get_album_tracks(url, id, access_token) do
     headers = [{"Authorization", "Bearer #{access_token}"}]
 
-    response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}/tracks?market=ES", headers, [])
+    response = HTTPoison.get!(url, headers, [])
 
     case response.status_code do
       200 ->
@@ -163,7 +172,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
           }
         end)
       _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 
@@ -193,7 +206,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
           uri: decoded_response["uri"]
         }
       _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 
@@ -230,7 +247,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
           }
         end)
       _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 
@@ -271,7 +292,11 @@ defmodule SpotifyInterface.Services.SpotifyService do
           }
         end)
       _ ->
-        {:error, %{"status" => response.status_code, "message" => response.body}}
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
 end

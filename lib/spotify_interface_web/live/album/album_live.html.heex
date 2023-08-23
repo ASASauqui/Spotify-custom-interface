@@ -1,3 +1,73 @@
-<div class="flex w-full bg-[#121212]">
-  <h1>Hello World!</h1>
+<div class="w-full min-h-screen flex bg-[#121212]">
+  <div class="w-full">
+    <div class="w-full min-w-[300px] flex flex-col md:flex-row justify-start items-center gap-x-5 px-4 md:px-10 py-10">
+      <div class="w-[250px] h-[250px] flex justify-center items-end">
+        <img
+          src={Enum.at(@album.images, 0)["url"]}
+        />
+      </div>
+      <div class="w-full md:w-auto h-auto md:min-h-[250px] flex flex-col justify-end items-center md:items-start pt-10 md:pt-0">
+        <div class="text-sm text-white font-semibold">Album</div>
+        <div class="text-white text-4xl md:text-7xl font-bold mb-5"><%= @album.name %></div>
+        <div class="flex justify-center items-center gap-x-2">
+          <img
+            class="w-6 h-6 rounded-full"
+            src={Enum.at(@album.images, 0)["url"]}
+          />
+          <a
+            href={"/artist/#{Enum.at(@album.artists, 0)["id"]}"}
+            class="text-white font-bold hover:underline cursor-pointer"
+          ><%= Enum.at(@album.artists, 0)["name"] %>
+          </a>
+        </div>
+        <div class="text-gray-400"><%= "#{@release_year || "No date"} • #{@album.total_tracks || "Unknown amount of"} tracks, #{@total_album_duration || "Unknown duration"}" %></div>
+      </div>
+    </div>
+
+    <div class="w-full min-w-[300px] flex flex-col">
+      <div class="flex py-3 border-b border-gray-600">
+        <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-300 font-semibold">#</div>
+        <div class="w-[70%] sm:w-[80%] md:w-[90%] flex justify-start items-center text-gray-300 font-semibold">Title</div>
+        <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-300 pr-5">
+          <i class="hero-clock h-5 w-5"></i>
+        </div>
+      </div>
+      <div :for={track <- @tracks} class="group flex py-3 hover:bg-[#8a8a8a27]">
+        <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-400 font-semibold">
+          <div class="group-hover:hidden"><%= track["track_number"] %></div>
+          <i class="hidden group-hover:block hero-play-solid cursor-pointer"></i>
+        </div>
+        <div class="w-[70%] sm:w-[80%] md:w-[90%] flex flex-col justify-start items-center">
+          <div class="w-full text-white font-semibold whitespace-nowrap truncate hover:underline cursor-pointer"><%= track["name"] %>
+          </div>
+          <div class="w-full flex justify-start items-center gap-x-2 text-white font-semibold overflow-hidden">
+            <div :if={track["explicit"]} class="w-4 h-4 flex justify-center items-center text-[10px] bg-gray-400 text-gray-600 rounded-sm">E</div>
+            <div class="text-sm text-gray-400 group-hover:text-white truncate">
+              <%= if length(track["artists"]) <= 1 do %>
+                <a
+                  href={"/artist/#{Enum.at(track["artists"], 0)["id"]}"}
+                  class="cursor-pointer hover:underline"
+                ><%= Enum.at(track["artists"], 0)["name"] %>
+                </a>
+              <%= else %>
+                <a
+                  href={"/artist/#{Enum.at(track["artists"], 0)["id"]}"}
+                  class="cursor-pointer hover:underline"
+                ><%= "#{Enum.at(track["artists"], 0)["name"]}," %>
+                </a>
+                <a
+                  href={"/artist/#{Enum.at(track["artists"], 1)["id"]}"}
+                  class="cursor-pointer hover:underline"
+                ><%= Enum.at(track["artists"], 1)["name"] %>
+                </a>
+              <%= end %>
+            </div>
+          </div>
+        </div>
+        <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-400 pr-5">
+          <%= ms_to_min_sec(track["duration_ms"]) %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

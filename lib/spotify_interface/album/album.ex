@@ -16,6 +16,8 @@ defmodule SpotifyInterface.Album.Album do
     field :genres, {:array, :string}
     field :label, :string
     field :popularity, :integer
+    field :tracks, :map
+    has_many :artists, SpotifyInterface.Artist.Artist
     has_many :images, SpotifyInterface.Image.Image
   end
 end
