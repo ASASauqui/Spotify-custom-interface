@@ -299,4 +299,40 @@ defmodule SpotifyInterface.Services.SpotifyService do
         {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
     end
   end
+
+  def get_related_artists(id, access_token) do
+    endpoint = "v1/artists"
+    headers = [{"Authorization", "Bearer #{access_token}"}]
+
+    response = HTTPoison.get!("#{@base_url}#{endpoint}/#{id}/related-artists?market=ES", headers, [])
+
+    case response.status_code do
+      200 ->
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        Enum.map(decoded_response["artists"], fn artist ->
+          %Artist{
+            external_urls: artist["external_urls"],
+            followers_href: artist["followers"]["href"],
+            total_followers: artist["followers"]["total"],
+            genres: artist["genres"],
+            genres_href: artist["href"],
+            id: artist["id"],
+            images: artist["images"],
+            name: artist["name"],
+            popularity: artist["popularity"],
+            type: artist["type"],
+            uri: artist["uri"]
+          }
+        end)
+      _ ->
+        decoded_response = response
+          |> Map.get(:body)
+          |> Jason.decode!()
+
+        {:error, %{"status" => response.status_code, "message" => decoded_response["error"]["message"]}}
+    end
+  end
 end
