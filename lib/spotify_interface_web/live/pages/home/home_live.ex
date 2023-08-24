@@ -37,10 +37,10 @@ defmodule SpotifyInterfaceWeb.HomeLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(search_item: search_item, albums: response.albums, artists: response.artists, tracks: response.tracks)
+          |> assign(search_item: search_item, albums: decoded_response.albums, artists: decoded_response.artists, tracks: decoded_response.tracks)
         {:ok, socket}
     end
   end

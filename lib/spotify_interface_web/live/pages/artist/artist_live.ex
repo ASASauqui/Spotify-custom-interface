@@ -38,7 +38,7 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
   end
 
   def handle_params(_params, _uri, socket) do
-    socket = assign(socket, followers: socket.assigns.artist.total_followers)
+    socket = assign(socket, followers: socket.assigns.artist["followers"]["total"])
 
     {:noreply, socket}
   end
@@ -52,10 +52,10 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(artist: response)
+          |> assign(artist: decoded_response)
         {:ok, socket}
     end
   end
@@ -69,10 +69,10 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(albums: response)
+          |> assign(albums: decoded_response)
         {:ok, socket}
     end
   end
@@ -86,10 +86,10 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(top_tracks: response)
+          |> assign(top_tracks: decoded_response)
         {:ok, socket}
     end
   end
@@ -103,10 +103,10 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(related_artists: response)
+          |> assign(related_artists: decoded_response)
         {:ok, socket}
     end
   end

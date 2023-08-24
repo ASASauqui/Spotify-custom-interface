@@ -19,7 +19,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
       )
 
     with {:ok, socket} <- get_album(socket, id, access_token) do
-      with {:ok, socket} <- get_artist(socket, Enum.at(socket.assigns.album.artists, 0)["id"], access_token) do
+      with {:ok, socket} <- get_artist(socket, Enum.at(socket.assigns.album["artists"], 0)["id"], access_token) do
         {:ok, socket}
       else
         {_, socket} -> {:ok, redirect(socket, to: "/logout")}
@@ -30,11 +30,11 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   end
 
   def handle_params(_params, _uri, socket) do
-    socket = assign(socket, :tracks, socket.assigns.album.tracks["items"])
+    socket = assign(socket, :tracks, socket.assigns.album["tracks"]["items"])
 
     socket = assign(socket, :total_album_duration, get_total_album_duration(socket))
 
-    socket = assign(socket, :release_year, get_year(socket.assigns.album.release_date))
+    socket = assign(socket, :release_year, get_year(socket.assigns.album["release_date"]))
 
     {:noreply, socket}
   end
@@ -48,10 +48,10 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(album: response)
+          |> assign(album: decoded_response)
         {:ok, socket}
     end
   end
@@ -65,16 +65,16 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
           socket
           |> put_flash(:error, "Error #{status}: #{message}.")
         {:error, socket}
-      _ ->
+      {:ok, decoded_response} ->
         socket =
           socket
-          |> assign(artist: response)
+          |> assign(artist: decoded_response)
         {:ok, socket}
     end
   end
 
   defp get_total_album_duration(socket) do
-    tracks = socket.assigns.album.tracks["items"]
+    tracks = socket.assigns.album["tracks"]["items"]
     total_duration = Enum.reduce(tracks, 0, fn track, acc ->
       acc + track["duration_ms"]
     end)

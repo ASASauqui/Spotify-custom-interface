@@ -50,17 +50,17 @@
 
           <div class="px-5 py-3 flex overflow-x-hidden hover:overflow-x-auto overflow-y-hidden gap-5 justify-start items-center">
             <div :for={artist <- @artists} class="flex justify-center items-center rounded-md">
-              <.link patch={~p"/artist/#{artist.id}"}>
+              <.link patch={~p"/artist/#{artist["id"]}"}>
                 <div
-                  id={artist.id}
+                  id={artist["id"]}
                   class="h-[230px] w-[230px] flex justify-center items-center bg-gray-200 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 hover:bg-opacity-20 cursor-pointer overflow-hidden"
                 >
                   <div class="flex flex-col justify-center items-center">
                     <img
                       class="w-[180px] h-[180px] rounded-full"
-                      src={Enum.at(artist.images, 0)["url"] || "https://vectorified.com/images/unknown-avatar-icon-7.jpg"}
+                      src={Enum.at(artist["images"], 0)["url"] || "https://vectorified.com/images/unknown-avatar-icon-7.jpg"}
                     />
-                    <span class="w-[180px] text-xs text-center mt-2 truncate text-white"><%= artist.name %></span>
+                    <span class="w-[180px] text-xs text-center mt-2 truncate text-white"><%= artist["name"] %></span>
                     </div>
                 </div>
               </.link>
@@ -80,17 +80,17 @@
 
           <div class="px-5 py-3 flex overflow-x-hidden hover:overflow-x-auto overflow-y-hidden gap-5 justify-start items-center">
             <div :for={album <- @albums} class="flex justify-center items-center rounded-md">
-              <.link patch={~p"/album/#{album.id}"}>
+              <.link patch={~p"/album/#{album["id"]}"}>
                 <div
-                  id={album.id}
+                  id={album["id"]}
                   class="h-[230px] w-[230px] flex justify-center items-center bg-gray-200 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 hover:bg-opacity-20 cursor-pointer overflow-hidden"
                 >
                   <div class="flex flex-col justify-center items-center">
                     <img
                       class="w-[180px] h-[180px] rounded-sm"
-                      src={Enum.at(album.images, 0)["url"] || "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0441c1c5-1d8c-4795-bd2b-09d00f49ab64/day4crn-500cb08a-3e2a-49d9-93c7-23a2f534ebba.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi8wNDQxYzFjNS0xZDhjLTQ3OTUtYmQyYi0wOWQwMGY0OWFiNjQvZGF5NGNybi01MDBjYjA4YS0zZTJhLTQ5ZDktOTNjNy0yM2EyZjUzNGViYmEucG5nIn1dXX0.qTho0m4VuxwPdWAq9i1CcIwsR_j-Sm-jeW7ss2-I8UQ"}
+                      src={Enum.at(album["images"], 0)["url"] || "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0441c1c5-1d8c-4795-bd2b-09d00f49ab64/day4crn-500cb08a-3e2a-49d9-93c7-23a2f534ebba.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi8wNDQxYzFjNS0xZDhjLTQ3OTUtYmQyYi0wOWQwMGY0OWFiNjQvZGF5NGNybi01MDBjYjA4YS0zZTJhLTQ5ZDktOTNjNy0yM2EyZjUzNGViYmEucG5nIn1dXX0.qTho0m4VuxwPdWAq9i1CcIwsR_j-Sm-jeW7ss2-I8UQ"}
                     />
-                    <span class="w-[180px] text-xs text-center mt-2 truncate text-white"><%= album.name %></span>
+                    <span class="w-[180px] text-xs text-center mt-2 truncate text-white"><%= album["name"] %></span>
                     </div>
                 </div>
               </.link>
