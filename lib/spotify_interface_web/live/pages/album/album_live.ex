@@ -1,6 +1,7 @@
 defmodule SpotifyInterfaceWeb.AlbumLive do
   use SpotifyInterfaceWeb, :live_view
-  alias SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterface.Services.SpotifyArtistsService
+  alias SpotifyInterface.Services.SpotifyAlbumsService
   alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(params, session, socket) do
@@ -40,7 +41,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   end
 
   defp get_album(socket, id, access_token) do
-    response = SpotifyService.get_album(id, access_token)
+    response = SpotifyAlbumsService.get_album(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
@@ -57,7 +58,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   end
 
   defp get_artist(socket, id, access_token) do
-    response = SpotifyService.get_artist(id, access_token)
+    response = SpotifyArtistsService.get_artist(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->

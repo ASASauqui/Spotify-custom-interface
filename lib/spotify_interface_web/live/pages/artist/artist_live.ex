@@ -1,6 +1,6 @@
 defmodule SpotifyInterfaceWeb.ArtistLive do
   use SpotifyInterfaceWeb, :live_view
-  alias SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterface.Services.SpotifyArtistsService
   alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(params, session, socket) do
@@ -44,7 +44,7 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
   end
 
   defp get_artist(socket, id, access_token) do
-    response = SpotifyService.get_artist(id, access_token)
+    response = SpotifyArtistsService.get_artist(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
@@ -61,7 +61,7 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
   end
 
   defp get_albums_by_artist(socket, id, access_token) do
-    response = SpotifyService.get_albums_by_artist(id, access_token)
+    response = SpotifyArtistsService.get_albums_by_artist(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
@@ -78,7 +78,7 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
   end
 
   defp get_top_tracks_by_artist(socket, id, access_token) do
-    response = SpotifyService.get_top_tracks_by_artist(id, access_token)
+    response = SpotifyArtistsService.get_top_tracks_by_artist(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
@@ -95,7 +95,7 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
   end
 
   defp get_related_artists(socket, id, access_token) do
-    response = SpotifyService.get_related_artists(id, access_token)
+    response = SpotifyArtistsService.get_related_artists(id, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->

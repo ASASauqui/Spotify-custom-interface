@@ -1,6 +1,6 @@
 defmodule SpotifyInterfaceWeb.HomeLive do
   use SpotifyInterfaceWeb, :live_view
-  alias SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterface.Services.SpotifySearchService
   alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(_params, session, socket) do
@@ -29,7 +29,7 @@ defmodule SpotifyInterfaceWeb.HomeLive do
   end
 
   defp search_for_item(socket, search_item, access_token) do
-    response = SpotifyService.search_for_item(search_item, access_token)
+    response = SpotifySearchService.search_for_item(search_item, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
