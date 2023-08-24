@@ -1,5 +1,7 @@
 <div class="w-full min-h-screen flex bg-[#121212]">
-  <div class="w-full">
+  <div class="w-full pb-[100px]">
+    <%!-- Artist info --%>
+    <%= if @artist != %{} && @artist != nil do %>
     <div
       class="w-full min-w-[300px] flex flex-col md:flex-row justify-start items-center gap-x-5 px-4 md:px-10 py-10 bg-center bg-cover"
       style={"background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 1)), url('#{Enum.at(@artist.images, 0)["url"]}');"}>
@@ -16,8 +18,12 @@
         <div class="text-gray-400"><%= "Followers: #{@followers}" %></div>
       </div>
     </div>
+    <% end %>
 
+    <%!-- Top tracks and related artists --%>
     <div class="w-full flex flex-col md:flex-row gap-x-5 gap-y-5 px-5 py-5">
+      <%!-- Top tracks --%>
+      <%= if length(@top_tracks) > 0 do %>
       <div class="w-full min-w-[300px] max-h-[500px] flex flex-col bg-[#0a0a0a] rounded-xl overflow-hidden">
         <div class="flex px-5 py-3 text-xl font-bold text-white">
         Popular Songs
@@ -45,7 +51,7 @@
                       class="cursor-pointer hover:underline"
                     ><%= Enum.at(track.artists, 0)["name"] %>
                     </a>
-                  <%= else %>
+                  <% else %>
                     <a
                       href={"/artist/#{Enum.at(track.artists, 0)["id"]}"}
                       class="cursor-pointer hover:underline"
@@ -56,14 +62,17 @@
                       class="cursor-pointer hover:underline"
                     ><%= Enum.at(track.artists, 1)["name"] %>
                     </a>
-                  <%= end %>
+                  <% end %>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <% end %>
 
+      <%!-- Related artists --%>
+      <%= if length(@related_artists) > 0 do %>
       <div class="w-full min-w-[300px] max-h-[500px] flex flex-col bg-[#0a0a0a] rounded-xl overflow-hidden">
         <div class="flex px-5 py-3 text-xl font-bold text-white">
         Related Artists
@@ -90,8 +99,11 @@
           </div>
         </div>
       </div>
+      <% end %>
     </div>
 
+    <%!-- Albums --%>
+    <%= if length(@albums) > 0 do %>
     <div class="w-full flex gap-x-5 gap-y-5 px-5 py-5">
       <div class="w-full min-w-[300px] h-[320px] flex flex-col bg-[#0a0a0a] rounded-xl overflow-hidden">
         <div class="flex px-5 py-3 text-xl font-bold text-white">
@@ -118,5 +130,13 @@
         </div>
       </div>
     </div>
+    <% end %>
+
   </div>
+
+  <%!-- Player bar --%>
+  <.live_component
+    module={PlayerBarComponent}
+    id={:new}
+  />
 </div>

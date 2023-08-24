@@ -1,6 +1,7 @@
 defmodule SpotifyInterfaceWeb.AlbumLive do
   use SpotifyInterfaceWeb, :live_view
   alias SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(params, session, socket) do
     access_token = session["access_token"]
@@ -11,13 +12,21 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
       assign(socket,
              access_token: access_token,
              album: %{},
+             artist: %{},
              tracks: [],
              total_album_duration: "",
              release_year: ""
       )
-      |> get_album(id, access_token)
 
-    {:ok, socket}
+    with {:ok, socket} <- get_album(socket, id, access_token) do
+      with {:ok, socket} <- get_artist(socket, Enum.at(socket.assigns.album.artists, 0)["id"], access_token) do
+        {:ok, socket}
+      else
+        {_, socket} -> {:ok, redirect(socket, to: "/logout")}
+      end
+    else
+      {_, socket} -> {:ok, redirect(socket, to: "/logout")}
+    end
   end
 
   def handle_params(_params, _uri, socket) do
@@ -35,12 +44,32 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        socket
-        |> put_flash(:error, "Error #{status}: #{message}.")
-        |> redirect(to: "/logout")
+        socket =
+          socket
+          |> put_flash(:error, "Error #{status}: #{message}.")
+        {:error, socket}
       _ ->
-        socket
-        |> assign(album: response)
+        socket =
+          socket
+          |> assign(album: response)
+        {:ok, socket}
+    end
+  end
+
+  defp get_artist(socket, id, access_token) do
+    response = SpotifyService.get_artist(id, access_token)
+
+    case response do
+      {:error, %{"status" => status, "message" => message}} ->
+        socket =
+          socket
+          |> put_flash(:error, "Error #{status}: #{message}.")
+        {:error, socket}
+      _ ->
+        socket =
+          socket
+          |> assign(artist: response)
+        {:ok, socket}
     end
   end
 
