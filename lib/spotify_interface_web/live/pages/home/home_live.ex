@@ -1,6 +1,6 @@
 defmodule SpotifyInterfaceWeb.HomeLive do
   use SpotifyInterfaceWeb, :live_view
-  import SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterface.Services.SpotifyService
   alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(_params, session, socket) do
@@ -21,13 +21,27 @@ defmodule SpotifyInterfaceWeb.HomeLive do
   end
 
   def handle_event("search-item", %{"search_item" => search_item}, socket) do
-    response = search_for_item(search_item, socket.assigns.access_token)
+    with {:ok, socket} <- search_for_item(socket, search_item, socket.assigns.access_token) do
+      {:noreply, socket}
+    else
+      {_, socket} -> {:noreply, redirect(socket, to: "/logout")}
+    end
+  end
+
+  defp search_for_item(socket, search_item, access_token) do
+    response = SpotifyService.search_for_item(search_item, access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:noreply, put_flash(socket, :error, "Error #{status}: #{message}.")}
+        socket =
+          socket
+          |> put_flash(:error, "Error #{status}: #{message}.")
+        {:error, socket}
       _ ->
-        {:noreply, assign(socket, search_item: search_item, albums: response.albums, artists: response.artists, tracks: response.tracks)}
+        socket =
+          socket
+          |> assign(search_item: search_item, albums: response.albums, artists: response.artists, tracks: response.tracks)
+        {:ok, socket}
     end
   end
 end
