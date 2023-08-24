@@ -3,6 +3,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   alias SpotifyInterface.Services.SpotifyArtistsService
   alias SpotifyInterface.Services.SpotifyAlbumsService
   alias SpotifyInterfaceWeb.PlayerBarComponent
+  alias SpotifyInterface.Formatters.NumberFormatters
 
   def mount(params, session, socket) do
     access_token = session["access_token"]
@@ -35,7 +36,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
 
     socket = assign(socket, :total_album_duration, get_total_album_duration(socket))
 
-    socket = assign(socket, :release_year, get_year(socket.assigns.album["release_date"]))
+    socket = assign(socket, :release_year, NumberFormatters.get_year_from_date(socket.assigns.album["release_date"]))
 
     {:noreply, socket}
   end
@@ -79,34 +80,6 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
     total_duration = Enum.reduce(tracks, 0, fn track, acc ->
       acc + track["duration_ms"]
     end)
-    ms_to_hour_min_sec(total_duration)
-  end
-
-  defp ms_to_hour_min_sec(ms) do
-    min = div(ms, 60000)
-
-    if min < 60 do
-      "#{min} min"
-    else
-      hour = div(min, 60)
-      min = rem(min, 60)
-      "#{hour} h #{min} min"
-    end
-  end
-
-  defp ms_to_min_sec(ms) do
-    min = div(ms, 60000)
-    sec = rem(div(ms, 1000), 60)
-
-    if sec < 10 do
-      "#{min}:0#{sec}"
-    else
-      "#{min}:#{sec}"
-    end
-  end
-
-  defp get_year(date) do
-    [year, _, _] = String.split(date, "-")
-    year
+    NumberFormatters.ms_to_hour_min_sec(total_duration)
   end
 end
