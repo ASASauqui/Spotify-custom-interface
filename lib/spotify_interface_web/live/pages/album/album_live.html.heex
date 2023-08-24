@@ -1,18 +1,22 @@
 <div class="w-full min-h-screen flex bg-[#121212]">
-  <div class="w-full">
-    <div class="w-full min-w-[300px] flex flex-col md:flex-row justify-start items-center gap-x-5 px-4 md:px-10 py-10">
+  <div class="w-full pb-[100px]">
+    <%!-- Album info --%>
+    <%= if @album != %{} && @album != nil do %>
+    <div
+      class="w-full min-w-[300px] flex flex-col md:flex-row justify-start items-center gap-x-5 px-4 md:px-10 py-10 bg-center bg-cover"
+      style={"background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 1)), url('#{Enum.at(@album.images, 0)["url"] || "https://wallpapercave.com/wp/wp2537078.jpg"}');"}>
       <div class="w-[250px] h-[250px] flex justify-center items-end">
         <img
-          src={Enum.at(@album.images, 0)["url"]}
+          src={Enum.at(@album.images, 0)["url"] || "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0441c1c5-1d8c-4795-bd2b-09d00f49ab64/day4crn-500cb08a-3e2a-49d9-93c7-23a2f534ebba.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi8wNDQxYzFjNS0xZDhjLTQ3OTUtYmQyYi0wOWQwMGY0OWFiNjQvZGF5NGNybi01MDBjYjA4YS0zZTJhLTQ5ZDktOTNjNy0yM2EyZjUzNGViYmEucG5nIn1dXX0.qTho0m4VuxwPdWAq9i1CcIwsR_j-Sm-jeW7ss2-I8UQ"}
         />
       </div>
       <div class="w-full md:w-auto h-auto md:min-h-[250px] flex flex-col justify-end items-center md:items-start pt-10 md:pt-0">
         <div class="text-sm text-white font-semibold">Album</div>
-        <div class="text-white text-4xl md:text-7xl font-bold mb-5"><%= @album.name %></div>
+        <div class="text-white text-4xl md:text-7xl font-bold text-center md:text-left mb-5"><%= @album.name %></div>
         <div class="flex justify-center items-center gap-x-2">
           <img
             class="w-6 h-6 rounded-full"
-            src={Enum.at(@album.images, 0)["url"]}
+            src={Enum.at(@artist.images, 0)["url"] || "https://vectorified.com/images/unknown-avatar-icon-7.jpg"}
           />
           <a
             href={"/artist/#{Enum.at(@album.artists, 0)["id"]}"}
@@ -23,7 +27,9 @@
         <div class="text-gray-400"><%= "#{@release_year || "No date"} • #{@album.total_tracks || "Unknown amount of"} tracks, #{@total_album_duration || "Unknown duration"}" %></div>
       </div>
     </div>
+    <% end %>
 
+    <%!-- Tracks --%>
     <div class="w-full min-w-[300px] flex flex-col">
       <div class="flex py-3 border-b border-gray-600">
         <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-300 font-semibold">#</div>
@@ -32,6 +38,8 @@
           <i class="hero-clock h-5 w-5"></i>
         </div>
       </div>
+
+      <%= if length(@tracks) > 0 do %>
       <div :for={track <- @tracks} class="group flex py-3 hover:bg-[#8a8a8a27]">
         <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-400 font-semibold">
           <div class="group-hover:hidden"><%= track["track_number"] %></div>
@@ -49,7 +57,7 @@
                   class="cursor-pointer hover:underline"
                 ><%= Enum.at(track["artists"], 0)["name"] %>
                 </a>
-              <%= else %>
+              <% else %>
                 <a
                   href={"/artist/#{Enum.at(track["artists"], 0)["id"]}"}
                   class="cursor-pointer hover:underline"
@@ -60,7 +68,7 @@
                   class="cursor-pointer hover:underline"
                 ><%= Enum.at(track["artists"], 1)["name"] %>
                 </a>
-              <%= end %>
+              <% end %>
             </div>
           </div>
         </div>
@@ -68,6 +76,14 @@
           <%= ms_to_min_sec(track["duration_ms"]) %>
         </div>
       </div>
+      <% end %>
     </div>
+
   </div>
+
+  <%!-- Player bar --%>
+  <.live_component
+    module={PlayerBarComponent}
+    id={:new}
+  />
 </div>

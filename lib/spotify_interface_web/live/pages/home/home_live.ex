@@ -1,14 +1,16 @@
 defmodule SpotifyInterfaceWeb.HomeLive do
   use SpotifyInterfaceWeb, :live_view
   import SpotifyInterface.Services.SpotifyService
+  alias SpotifyInterfaceWeb.PlayerBarComponent
 
   def mount(_params, session, socket) do
-    socket = assign(socket,
-                    access_token: session["access_token"],
-                    search_item: "",
-                    albums: [],
-                    artists: [],
-                    tracks: []
+    socket =
+      assign(socket,
+             access_token: session["access_token"],
+             search_item: "",
+             albums: [],
+             artists: [],
+             tracks: []
       )
 
     {:ok, socket}
