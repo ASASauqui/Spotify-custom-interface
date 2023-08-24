@@ -2,7 +2,6 @@ defmodule SpotifyInterfaceWeb.AuthenticationController do
   use SpotifyInterfaceWeb, :controller
   use SpotifyInterfaceWeb, :verified_routes
 
-  alias SpotifyInterfaceWeb.UserAuth
   alias SpotifyInterface.Crypto.StringGenerator
   alias SpotifyInterface.Crypto.CodeChallenge
 
@@ -10,7 +9,7 @@ defmodule SpotifyInterfaceWeb.AuthenticationController do
 
   def login(conn, _params) do
     redirect_uri = "http://localhost:4000/callback"
-    scope = "user-read-private user-read-email"
+    scope = "user-read-private user-read-email user-read-playback-state user-modify-playback-state"
 
     state = StringGenerator.generate_random_string(16)
     code_verifier = StringGenerator.generate_random_string(128)
