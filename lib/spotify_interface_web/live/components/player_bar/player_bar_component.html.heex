@@ -27,7 +27,7 @@
                 </svg>
             </button>
             <button
-                phx-click={if @is_playing, do: "pause-playback", else: "start-resume-playback"}
+                phx-click={if @is_playing, do: "pause-playback", else: "current-start-resume-playback"}
                 phx-target={@myself}
                 class="rounded-full h-10 w-10 text-gray-100 cursor-pointer flex"
             >

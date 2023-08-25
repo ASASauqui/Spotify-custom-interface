@@ -18,7 +18,7 @@ defmodule SpotifyInterfaceWeb.PlayerBarComponent do
              track_uri: nil
       )
 
-    :timer.send_interval(1000, :tick)
+    # :timer.send_interval(1000, :tick)
 
     {:ok, socket}
   end
@@ -77,6 +77,20 @@ defmodule SpotifyInterfaceWeb.PlayerBarComponent do
     socket = assign(socket, is_playing: true)
 
     response = SpotifyPlayerService.start_resume_playback(socket.assigns.access_token, params["context_uri"], params["uri"], 0)
+
+    case response do
+      {:error, %{"status" => status, "message" => message}} ->
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
+    end
+  end
+
+  def handle_event("current-start-resume-playback", _params, socket) do
+    socket = assign(socket, is_playing: true)
+
+    response = SpotifyPlayerService.start_resume_playback(socket.assigns.access_token, socket.assigns.context_uri, socket.assigns.track_uri, socket.assigns.progress_ms)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
