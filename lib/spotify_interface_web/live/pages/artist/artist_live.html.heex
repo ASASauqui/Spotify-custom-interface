@@ -29,7 +29,14 @@
         Popular Songs
         </div>
         <div class="w-full overflow-y-hidden hover:overflow-y-auto overflow-x-hidden">
-          <div :for={track <- @top_tracks} class="group flex px-5 py-3 hover:bg-[#8a8a8a27] gap-x-4">
+          <div
+            :for={track <- @top_tracks}
+            id={track["id"]}
+            phx-click="play_track"
+            phx-value-context_uri={track["album"]["uri"]}
+            phx-value-uri={track["uri"]}
+            class="group flex px-5 py-3 hover:bg-[#8a8a8a27] gap-x-4"
+          >
             <div class="flex justify-center items-center text-gray-400 font-semibold">
               <div class="w-10 h-10 flex justify-center items-center">
                 <img
@@ -137,7 +144,9 @@
   <%!-- Player bar --%>
   <.live_component
     module={PlayerBarComponent}
-    id={:player_bar_component}
+    id={"player_bar_component"}
     access_token={@access_token}
+    context_uri={@context_uri}
+    track_uri={@track_uri}
   />
 </div>

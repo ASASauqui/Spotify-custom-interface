@@ -15,7 +15,9 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
              albums: [],
              top_tracks: [],
              related_artists: [],
-             followers: ""
+             followers: "",
+             context_uri: "",
+             track_uri: ""
       )
 
     with {:ok, socket} <- get_artist(socket, id, access_token) do
@@ -39,6 +41,31 @@ defmodule SpotifyInterfaceWeb.ArtistLive do
 
   def handle_params(_params, _uri, socket) do
     socket = assign(socket, followers: socket.assigns.artist["followers"]["total"])
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:tick, socket) do
+    send_update(PlayerBarComponent, id: "player_bar_component", access_token: socket.assigns.access_token, track_uri: socket.assigns.track_uri)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:api_error, %{status: status, message: message}}, socket) do
+    socket =
+      socket
+      |> put_flash(:error, "Error #{status}: #{message}.")
+    {:noreply, socket}
+  end
+
+  def handle_event("play_track", params, socket) do
+    socket =
+      assign(socket,
+             context_uri: params["context_uri"],
+             track_uri: params["uri"]
+      )
+
+    PlayerBarComponent.handle_event("start-resume-playback", params, socket)
 
     {:noreply, socket}
   end

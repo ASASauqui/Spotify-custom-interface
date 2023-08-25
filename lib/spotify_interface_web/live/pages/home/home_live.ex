@@ -16,6 +16,19 @@ defmodule SpotifyInterfaceWeb.HomeLive do
     {:ok, socket}
   end
 
+  def handle_info(:tick, socket) do
+    send_update(PlayerBarComponent, id: "player_bar_component", access_token: socket.assigns.access_token, track_uri: "")
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:api_error, %{status: status, message: message}}, socket) do
+    socket =
+      socket
+      |> put_flash(:error, "Error #{status}: #{message}.")
+    {:noreply, socket}
+  end
+
   def handle_event("search-item", %{"search_item" => ""}, socket) do
     {:noreply, assign(socket, search_item: "", albums: [], artists: [], tracks: [])}
   end

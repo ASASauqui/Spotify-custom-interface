@@ -1,97 +1,157 @@
 defmodule SpotifyInterfaceWeb.PlayerBarComponent do
   use SpotifyInterfaceWeb, :live_component
   alias SpotifyInterface.Services.SpotifyPlayerService
+  alias SpotifyInterface.Formatters.NumberFormatters
 
   def mount(socket) do
+    socket =
+      assign(socket,
+             device: nil,
+             track_name: nil,
+             artist_names: nil,
+             image_href: nil,
+             is_playing: false,
+             progress_ms: 0,
+             track_duration_ms: 0,
+             volume_percent: 0
+      )
+
+    :timer.send_interval(1000, :tick)
+
     {:ok, socket}
   end
 
   def update(assigns, socket) do
-    # with {:ok, socket} <- set_playback_volume(socket, assigns.access_token, 10) do
-    #   {:ok, socket}
-    # else
-    #   {_, socket} -> {:ok, socket}
-    # end
-    {:ok, socket}
+    socket = assign(socket, assigns)
+
+    with {:ok, socket} <- get_playback_state(socket, assigns.access_token) do
+      {:ok, socket}
+    else
+      {:error, socket} -> {:ok, socket}
+    end
   end
 
-  defp get_playback_state(socket, access_token) do
+  def get_playback_state(socket, access_token) do
     response = SpotifyPlayerService.get_playback_state(access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
+        socket =
+          assign(socket,
+                 device: nil,
+                 track_name: nil,
+                 artist_names: nil,
+                 image_href: nil,
+                 is_playing: false,
+                 progress_ms: nil,
+                 track_duration_ms: nil,
+                 volume_percent: nil
+          )
+        send(self(), {:api_error, %{status: status, message: message}})
         {:error, socket}
       {:ok, decoded_response} ->
         socket =
-          socket
-          |> assign(device: decoded_response)
+          assign(socket,
+                 device: decoded_response,
+                 track_name: decoded_response["item"]["name"],
+                 artist_names: Enum.map(decoded_response["item"]["artists"], fn artist -> artist["name"] end) |> Enum.join(", "),
+                 image_href: Enum.at(decoded_response["item"]["album"]["images"], 0)["url"],
+                 is_playing: decoded_response["is_playing"],
+                 progress_ms: decoded_response["progress_ms"],
+                 track_duration_ms: decoded_response["item"]["duration_ms"],
+                 volume_percent: decoded_response["device"]["volume_percent"]
+          )
         {:ok, socket}
     end
   end
 
-  defp start_resume_playback(socket, access_token, context_uri, position, position_ms) do
-    response = SpotifyPlayerService.start_resume_playback(access_token, context_uri, position, position_ms)
+  def handle_event("start-resume-playback", params, socket) do
+    socket = assign(socket, is_playing: true)
+
+    response = SpotifyPlayerService.start_resume_playback(socket.assigns.access_token, params["context_uri"], params["uri"], 0)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 
-  defp pause_playback(socket, access_token) do
-    response = SpotifyPlayerService.pause_playback(access_token)
+  def handle_event("start-resume-playback", params, socket) do
+    socket = assign(socket, is_playing: true)
+
+    response = SpotifyPlayerService.start_resume_playback(socket.assigns.access_token, params["context_uri"], params["uri"], 0)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 
-  defp skip_to_next(socket, access_token) do
-    response = SpotifyPlayerService.skip_to_next(access_token)
+  def handle_event("pause-playback", _, socket) do
+    socket = assign(socket, is_playing: false)
+
+    response = SpotifyPlayerService.pause_playback(socket.assigns.access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 
-  defp skip_to_previous(socket, access_token) do
-    response = SpotifyPlayerService.skip_to_previous(access_token)
+  def handle_event("skip-to-next", _, socket) do
+    response = SpotifyPlayerService.skip_to_next(socket.assigns.access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 
-  defp seek_to_position(socket, access_token, position_ms) do
-    response = SpotifyPlayerService.seek_to_position(access_token, position_ms)
+  def handle_event("skip-to-previous", _, socket) do
+    response = SpotifyPlayerService.skip_to_previous(socket.assigns.access_token)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 
-  defp set_playback_volume(socket, access_token, volume_percent) do
-    response = SpotifyPlayerService.set_playback_volume(access_token, volume_percent)
+  def handle_event("seek-to-position", %{"progress_ms" => progress_ms}, socket) do
+    response = SpotifyPlayerService.seek_to_position(socket.assigns.access_token, progress_ms)
 
     case response do
       {:error, %{"status" => status, "message" => message}} ->
-        {:error, socket}
-      {:ok, decoded_response} ->
-        {:ok, socket}
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
+    end
+  end
+
+  def handle_event("set-playback-volume", %{"volume_percent" => volume_percent}, socket) do
+    response = SpotifyPlayerService.set_playback_volume(socket.assigns.access_token, volume_percent)
+
+    case response do
+      {:error, %{"status" => status, "message" => message}} ->
+        send(self(), {:api_error, %{status: status, message: message}})
+        {:noreply, socket}
+      {:ok, _} ->
+        {:noreply, socket}
     end
   end
 end

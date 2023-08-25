@@ -40,7 +40,14 @@
       </div>
 
       <%= if length(@tracks) > 0 do %>
-      <div :for={track <- @tracks} class="group flex py-3 hover:bg-[#8a8a8a27]">
+      <div
+        :for={track <- @tracks}
+        id={track["id"]}
+        phx-click="play_track"
+        phx-value-context_uri={@album["uri"]}
+        phx-value-uri={track["uri"]}
+        class="group flex py-3 hover:bg-[#8a8a8a27]"
+      >
         <div class="w-[15%] sm:w-[10%] md:w-[5%] flex justify-center items-center text-gray-400 font-semibold">
           <div class="group-hover:hidden"><%= track["track_number"] %></div>
           <i class="hidden group-hover:block hero-play-solid cursor-pointer"></i>
@@ -84,7 +91,9 @@
   <%!-- Player bar --%>
   <.live_component
     module={PlayerBarComponent}
-    id={:player_bar_component}
+    id={"player_bar_component"}
     access_token={@access_token}
+    context_uri={@album["uri"]}
+    track_uri={@track_uri}
   />
 </div>

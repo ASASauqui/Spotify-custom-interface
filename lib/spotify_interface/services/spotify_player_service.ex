@@ -25,18 +25,17 @@ defmodule SpotifyInterface.Services.SpotifyPlayerService do
     end
   end
 
-  def start_resume_playback(access_token, context_uri, position, position_ms) do
+  def start_resume_playback(access_token, context_uri, track_uri, position_ms) do
     endpoint = "v1/me/player/play"
     headers = [{"Authorization", "Bearer #{access_token}"}]
 
     data =
-      {:form,
-        [
-          {"context_uri", context_uri},
-          {"offset", %{"position" => position}},
-          {"position_ms", position_ms}
-        ]
+      %{
+        "context_uri" => context_uri,
+        "offset" => %{"uri" => track_uri},
+        "position_ms" => position_ms
       }
+      |> Jason.encode!()
 
     response =
       HTTPoison.put!("#{@base_url}#{endpoint}",

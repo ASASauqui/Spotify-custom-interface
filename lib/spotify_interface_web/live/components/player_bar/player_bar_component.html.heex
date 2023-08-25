@@ -1,73 +1,130 @@
 <div id="player" class="fixed w-full min-w-[300px] bottom-0 h-24 flex flex-row bg-black bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-20">
     <div id="cover-and-title" class="w-2/3 sm:w-1/3 flex items-center gap-x-2 px-4">
         <div id="cover" class="w-16 md:w-24 h-16 md:h-24 py-2">
-            <img src="https://i.scdn.co/image/ab67616d0000b27349d694203245f241a1bcaa72" class="object-cover h-full w-full" />
+            <img
+                src={@image_href || "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0441c1c5-1d8c-4795-bd2b-09d00f49ab64/day4crn-500cb08a-3e2a-49d9-93c7-23a2f534ebba.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi8wNDQxYzFjNS0xZDhjLTQ3OTUtYmQyYi0wOWQwMGY0OWFiNjQvZGF5NGNybi01MDBjYjA4YS0zZTJhLTQ5ZDktOTNjNy0yM2EyZjUzNGViYmEucG5nIn1dXX0.qTho0m4VuxwPdWAq9i1CcIwsR_j-Sm-jeW7ss2-I8UQ"}
+                class="object-cover h-full w-full"
+            />
         </div>
         <div id="title" class="w-8/12 h-24 text-gray-200 flex flex-col justify-center py-2">
-            <h2 class="font-bold">Me porto bonito</h2>
-            <div class="text-gray-300 overflow-ellipsis whitespace-nowrap overflow-x-hidden capitalize">Bad Bunny</div>
+            <h2 class="font-bold"><%= @track_name || "" %></h2>
+            <div class="text-gray-300 overflow-ellipsis whitespace-nowrap overflow-x-hidden capitalize"><%= @artist_names || "" %></div>
         </div>
     </div>
 
     <div id="controlers" class="w-1/3 hidden sm:flex flex-col h-full">
         <div class="h-3/5 flex justify-center items-center gap-x-2">
-            <div class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex">
+            <button
+                phx-click="skip-to-previous"
+                phx-target={@myself}
+                class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex"
+            >
                 <svg class="p-2 fill-current" viewBox="0 0 32 32">
                     <g>
                         <path d="M30.5,2.62a1,1,0,0,0-1,0L7.82,15.13a1,1,0,0,0,0,1.74L29.5,29.38a1,1,0,0,0,1.5-.86v-25A1,1,0,0,0,30.5,2.62ZM29,26.78,10.32,16,29,5.22Z" />
                         <path d="M2,5.2a1,1,0,0,0-1,1V25.8a1,1,0,0,0,2,0V6.2A1,1,0,0,0,2,5.2Z" />
                     </g>
                 </svg>
-            </div>
-            <div class="rounded-full h-10 w-10 text-gray-100 cursor-pointer flex">
-                <i class="hero-play h-10 w-10 p-2"></i>
-            </div>
-            <div class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex">
+            </button>
+            <button
+                phx-click={if @is_playing, do: "pause-playback", else: "start-resume-playback"}
+                phx-target={@myself}
+                class="rounded-full h-10 w-10 text-gray-100 cursor-pointer flex"
+            >
+                <i :if={!@is_playing} class="hero-play h-10 w-10 p-2"></i>
+                <i :if={@is_playing} class="hero-pause h-10 w-10 p-2"></i>
+            </button>
+            <button
+                phx-click="skip-to-next"
+                phx-target={@myself}
+                class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex"
+            >
                 <svg class="p-2 fill-current" viewBox="0 0 32 32">
                     <g>
                         <path d="M24.18,15.13,2.5,2.62A1,1,0,0,0,1,3.48v25a1,1,0,0,0,1.5.86L24.18,16.87A1,1,0,0,0,24.18,15.13ZM3,26.78V5.22L21.68,16Z" />
                         <path d="M30,5.2a1,1,0,0,0-1,1V25.8a1,1,0,0,0,2,0V6.2A1,1,0,0,0,30,5.2Z" />
                     </g>
                 </svg>
-            </div>
+            </button>
         </div>
         <div class="h-2/5 w-full flex justify-between items-center">
-            <span class="text-sm text-gray-200 w-12 text-left">1:20</span>
-            <input type="range" class="w-full h-1" />
-            <span class="text-sm text-gray-200 w-12 text-right">4:16</span>
+            <span class="text-sm text-gray-200 w-12 text-left"><%= if @progress_ms, do: NumberFormatters.ms_to_min_sec(@progress_ms), else: "--:--" %></span>
+            <form
+                phx-change="seek-to-position"
+                phx-target={@myself}
+                class="w-full flex justify-center items-center"
+            >
+                <input
+                    type="range"
+                    name="progress_ms"
+                    value={if @progress_ms, do: @progress_ms, else: 0}
+                    min="0"
+                    max={@track_duration_ms || 100}
+                    phx-debounce="1000"
+                    class="w-full h-1 th"
+                />
+            </form>
+            <span class="text-sm text-gray-200 w-12 text-right"><%= if @track_duration_ms, do: NumberFormatters.ms_to_min_sec(@track_duration_ms), else: "--:--" %></span>
         </div>
     </div>
 
     <div id="controlers-mobile" class="w-1/3 flex sm:hidden flex-col h-full">
         <div class="h-full flex justify-center items-center gap-x-1">
-            <div class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex">
+            <button
+                phx-click="skip-to-previous"
+                phx-target={@myself}
+                class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex"
+            >
                 <svg class="p-2 fill-current" viewBox="0 0 32 32">
                     <g>
                         <path d="M30.5,2.62a1,1,0,0,0-1,0L7.82,15.13a1,1,0,0,0,0,1.74L29.5,29.38a1,1,0,0,0,1.5-.86v-25A1,1,0,0,0,30.5,2.62ZM29,26.78,10.32,16,29,5.22Z" />
                         <path d="M2,5.2a1,1,0,0,0-1,1V25.8a1,1,0,0,0,2,0V6.2A1,1,0,0,0,2,5.2Z" />
                     </g>
                 </svg>
-            </div>
-            <div class="rounded-full h-10 w-10 text-gray-100 cursor-pointer flex justify-center items-center">
-                <i class="hero-play h-10 w-10 p-2"></i>
-            </div>
-            <div class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex">
+            </button>
+            <button
+                phx-click={if @is_playing, do: "pause-playback", else: "start-resume-playback"}
+                phx-target={@myself}
+                class="rounded-full h-10 w-10 text-gray-100 cursor-pointer flex"
+            >
+                <i :if={!@is_playing} class="hero-play h-10 w-10 p-2"></i>
+                <i :if={@is_playing} class="hero-pause h-10 w-10 p-2"></i>
+            </button>
+            <button
+                phx-click="skip-to-next"
+                phx-target={@myself}
+                class="rounded-full h-8 w-8 text-gray-300 hover:text-gray-100 cursor-pointer flex"
+            >
                 <svg class="p-2 fill-current" viewBox="0 0 32 32">
                     <g>
                         <path d="M24.18,15.13,2.5,2.62A1,1,0,0,0,1,3.48v25a1,1,0,0,0,1.5.86L24.18,16.87A1,1,0,0,0,24.18,15.13ZM3,26.78V5.22L21.68,16Z" />
                         <path d="M30,5.2a1,1,0,0,0-1,1V25.8a1,1,0,0,0,2,0V6.2A1,1,0,0,0,30,5.2Z" />
                     </g>
                 </svg>
-            </div>
+            </button>
         </div>
     </div>
 
-    <div id="volume" class="w-1/3 hidden sm:flex justify-end items-center text-gray-100 px-4">
+    <div id="volume" class="w-1/3 hidden sm:flex justify-end items-center text-gray-100 pl-4 pr-10">
         <div class="w-5 flex justify-center items-center mx-1">
             <i class="hero-speaker-wave h-5 w-5"></i>
         </div>
         <div class="w-24 flex justify-center items-center">
-            <input class="h-1 w-full" type="range" />
+            <form
+                phx-change="set-playback-volume"
+                phx-target={@myself}
+                class="w-full flex justify-center items-center"
+            >
+                <input
+                    type="range"
+                    name="volume_percent"
+                    value={@volume_percent || 0}
+                    min="0"
+                    max="100"
+                    phx-debounce="1000"
+                    class="h-1 w-full"
+                />
+            </form>
         </div>
     </div>
 </div>
