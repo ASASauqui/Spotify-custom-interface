@@ -32,7 +32,7 @@
           <div
             :for={track <- @top_tracks}
             id={track["id"]}
-            phx-click="play_track"
+            phx-click="play-track"
             phx-value-context_uri={track["album"]["uri"]}
             phx-value-uri={track["uri"]}
             class="group flex px-5 py-3 hover:bg-[#8a8a8a27] gap-x-4"
@@ -146,7 +146,5 @@
     module={PlayerBarComponent}
     id={"player_bar_component"}
     access_token={@access_token}
-    context_uri={@context_uri}
-    track_uri={@track_uri}
   />
 </div>

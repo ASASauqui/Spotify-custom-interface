@@ -17,9 +17,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
              artist: %{},
              tracks: [],
              total_album_duration: "",
-             release_year: "",
-             context_uri: "",
-             track_uri: ""
+             release_year: ""
       )
 
     with {:ok, socket} <- get_album(socket, id, access_token) do
@@ -44,7 +42,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
   end
 
   def handle_info(:tick, socket) do
-    send_update(PlayerBarComponent, id: "player_bar_component", access_token: socket.assigns.access_token, track_uri: socket.assigns.track_uri)
+    send_update(PlayerBarComponent, id: "player_bar_component", access_token: socket.assigns.access_token)
 
     {:noreply, socket}
   end
@@ -56,13 +54,7 @@ defmodule SpotifyInterfaceWeb.AlbumLive do
     {:noreply, socket}
   end
 
-  def handle_event("play_track", params, socket) do
-    socket =
-      assign(socket,
-             context_uri: params["context_uri"],
-             track_uri: params["uri"]
-      )
-
+  def handle_event("play-track", params, socket) do
     PlayerBarComponent.handle_event("start-resume-playback", params, socket)
 
     {:noreply, socket}
