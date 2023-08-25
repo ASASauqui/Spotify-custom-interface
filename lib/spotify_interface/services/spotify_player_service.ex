@@ -15,7 +15,7 @@ defmodule SpotifyInterface.Services.SpotifyPlayerService do
 
         {:ok, decoded_response}
       204 ->
-        {:error, %{"status" => response.status_code, "message" => "Playback is not active."}}
+        {:error, %{"status" => response.status_code, "message" => "Playback is not active"}}
       _ ->
         decoded_response = response
           |> Map.get(:body)
