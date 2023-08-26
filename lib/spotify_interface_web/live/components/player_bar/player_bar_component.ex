@@ -18,7 +18,7 @@ defmodule SpotifyInterfaceWeb.PlayerBarComponent do
              track_uri: nil
       )
 
-    # :timer.send_interval(1000, :tick)
+    :timer.send_interval(1000, :tick)
 
     {:ok, socket}
   end
