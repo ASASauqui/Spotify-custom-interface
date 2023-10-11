@@ -7,9 +7,6 @@
 # General application configuration
 import Config
 
-config :spotify_interface,
-  ecto_repos: [SpotifyInterface.Repo]
-
 # Configures the endpoint
 config :spotify_interface, SpotifyInterfaceWeb.Endpoint,
   url: [host: "localhost"],

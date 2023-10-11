@@ -11,7 +11,7 @@ defmodule SpotifyInterface.Application do
       # Start the Telemetry supervisor
       SpotifyInterfaceWeb.Telemetry,
       # Start the Ecto repository
-      SpotifyInterface.Repo,
+      # SpotifyInterface.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: SpotifyInterface.PubSub},
       # Start Finch
